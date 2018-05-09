@@ -34,6 +34,7 @@
     },
     "extra": {
         "bolt-assets": "web",
-        "bolt-class": "Kemper\\Elastic\\ElasticExtension"
+        "bolt-class": "Kemper\\Elastic\\ElasticExtension",
+        "bolt-icon": "elastic-logo.png"
     }
 }
