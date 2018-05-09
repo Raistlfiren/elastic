@@ -14,7 +14,7 @@ It does NOT
 - Include any twig functions to use in your Bolt CMS to help search through Elasticsearch
 - Adjust once the content types are changed
 
-##Installation
+## Installation
 Installation is relatively simple, but since it needs the `elasticsearch-php` package, it will need to be installed separately. 
 This can be done by logging into your server through SSH and installing the library through command line. 
 
@@ -34,37 +34,37 @@ the menu called `ES Status`. It will allow you to create the index and import da
 *If you modify the contenttypes.yml file after you create the index and import data, then you will need re-index your 
 data and re-create the index to include the new content types or fields.*
 
-##Configuration
+## Configuration
 A new configuration file will be created in `app/config/extensions/elastic.kemper.yml` once it is installed 
 that allows you to customize most things.
 
-##Making Content Types Searchable
+## Making Content Types Searchable
 You can make a content type searchable by setting `searchable: true` in the `app/config/contenttypes.yml` file. They will 
 not be included in the index, if that value is not included with the content type.
 
-###Hosts
+### Hosts
 You can define one or many hosts for your elasticsearch instance under hosts. More information can be found here - 
 https://www.elastic.co/guide/en/elasticsearch/client/php-api/current/_configuration.html
 
-###Index Name
+### Index Name
 The index name is the name of the index, enough said.
 
-###Index Settings
+### Index Settings
 The index settings will include any settings that you might want to include for the index. You can find more information 
 on configuring this through the Elasticsearch documentation - https://www.elastic.co/guide/en/elasticsearch/guide/current/_index_settings.html
 
-###Index Mappings
+### Index Mappings
 The index mappings can be defined for individual fields if needed. Currently, all fields are indexed per content type. 
 This allows you to add mapping information for fields other than what Elasticsearch gives each field by default. Datetime 
 fields are automatically defaulted to datetime `YYYY-MM-dd HH:mm:ss`. The other fields are guessed by Elasticsearch.
 
-###Usage
+### Usage
 After everything is installed, it should be working properly in the background. Every time a content type is created, updated, 
 and deleted it will log it in the system log. 
 
 ##TODO
- - [] - Integrate search functionality into Bolt (**Maybe this should be in another extension to prevent a monolithic extension**)
-    - [] - Create a search route to replace the existing search route that uses Elasticsearch
-    - [] - Create a TWIG function similar to `search` that integrates into Elasticsearch
- - [] - Once the contenttypes.yml changes update Elasticsearch appropriately
- - [] - Add tests
+ - [ ] - Integrate search functionality into Bolt (**Maybe this should be in another extension to prevent a monolithic extension**)
+    - [ ] - Create a search route to replace the existing search route that uses Elasticsearch
+    - [ ] - Create a TWIG function similar to `search` that integrates into Elasticsearch
+ - [ ] - Once the contenttypes.yml changes update Elasticsearch appropriately
+ - [ ] - Add tests
