@@ -1,0 +1,66 @@
+{% extends "_base/_page-nav.twig" %}
+
+{% block page_title %}
+    {{ __('elastic.title', {'DEFAULT': 'Elasticsearch Status'})}}
+{% endblock %}
+
+{% block page_main %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="alert {{ (isESAvailable ? 'alert-success' : 'alert-danger') }} alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                {{ (isESAvailable ? 'Connected to Elasticsearch!' : 'Elasticsearch can not be connected to.') }}
+            </div>
+            <div class="alert {{ (isIndexAvailable ? 'alert-success' : 'alert-danger') }} alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                {{ (isIndexAvailable ? 'Index is available' : 'Index has not been created.') }}
+            </div>
+
+            {% if debugging is defined %}
+                {% for line in debugging %}
+                    {{ line|raw }}
+                {% endfor %}
+            {% endif %}
+
+            {% if mappings is not empty %}
+                <div class="panel-group" role="tablist">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="collapseListGroupHeading1">
+                            <h4 class="panel-title"> <a href="#collapseListGroup1" class="" role="button" data-toggle="collapse" aria-expanded="true" aria-controls="collapseListGroup1"> Mappings </a> </h4>
+                        </div>
+                        <div class="panel-collapse collapse in" role="tabpanel" id="collapseListGroup1" aria-labelledby="collapseListGroupHeading1" aria-expanded="true" style="">
+                            <ul class="list-group">
+                                {% for index in mappings %}
+                                    {% for mapping in index %}
+                                        {% for type, properties in mapping %}
+                                            <li class="list-group-item"><span class="badge">{{ properties.properties|length }} Properties</span>{{type}}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <aside class="col-md-4">
+            <div class="panel panel-default panel-news">
+                <div class="panel-heading">
+                    <i class="fa fa-fw fa-cog"></i>
+                    Functions </div>
+                <div class="panel-body">
+                    {% if isESAvailable %}
+                        <form type="post" class="saveform" method="post">
+                            <p>
+                                <button class="btn btn-primary" name="import" type="submit">
+                                    <i class="fa fa-plus"></i> Import Existing Data and Create/Re-Create Index
+                                </button>
+                            </p>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </aside>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+hosts:
+    - localhost:9300
+
+indexname: 'bolt'
+
+indexsetting:
+    analysis:
+        analyzer:
+            default_index:
+                type: custom
+                char_filter: html_strip
+                tokenizer: standard
+                filter: [ standard, my_word_delimiter, trim, lowercase, my_edge_ngram_filter, english_stop_words, asciifolding ]
+            default_search:
+                type: custom
+                tokenizer: standard
+                filter: [ trim, lowercase, english_stop_words, asciifolding ]
+        filter:
+            my_edge_ngram_filter:
+                type: "edgeNGram"
+                min_gram: "3"
+                max_gram: "20"
+            english_stop_words:
+                type: "stop"
+                stopwords: "_english_"
+            my_word_delimiter:
+                type: "word_delimiter"
+                preserve_original: true
+
+mappings:
+    entries:
+        title:
+            mapping:
+                type: string
+                boost: 10
+        body:
+            mapping:
+                type: string
+    pages:
+        title:
+            mapping:
+                type: string
+        body:
+            mapping:
+                type: string
