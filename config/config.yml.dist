@@ -1,9 +1,9 @@
 hosts:
-    - localhost:9300
+    - localhost:9200
 
-indexname: 'bolt'
+index: 'bolt'
 
-indexsetting:
+indexSettings:
     analysis:
         analyzer:
             default_index:
