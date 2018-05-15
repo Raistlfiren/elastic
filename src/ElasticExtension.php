@@ -97,7 +97,8 @@ class ElasticExtension extends SimpleExtension
 
         return [
             '/elastic' => new ElasticController(
-                $app['elastic.service']
+                $app['elastic.service'],
+                $app['elastic.config']
             ),
         ];
     }

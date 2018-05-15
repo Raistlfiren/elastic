@@ -3,14 +3,8 @@
 namespace Kemper\Elastic\Controller;
 
 use Bolt\Controller\Base;
-use Bolt\Logger\FlashLogger;
-use Bolt\Storage\Mapping\MetadataDriver;
-use Bolt\Storage\Query\Query;
-use Carbon\Carbon;
-use Elasticsearch\Client;
 use Kemper\Elastic\Config\Config;
 use Kemper\Elastic\Service\ElasticService;
-use Monolog\Logger;
 use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,14 +18,19 @@ class ElasticController extends Base
     /** @var ElasticService $elasticService */
     private $elasticService;
 
+    /** @var Config $config */
+    private $config;
+
     /**
      * ElasticController constructor.
      *
      * @param ElasticService $elasticService
+     * @param Config $config
      */
-    public function __construct(ElasticService $elasticService)
+    public function __construct(ElasticService $elasticService, Config $config)
     {
         $this->elasticService = $elasticService;
+        $this->config = $config;
     }
 
     /**
@@ -59,7 +58,8 @@ class ElasticController extends Base
         $data = [
             'isESAvailable'    => $isESAvailable,
             'isIndexAvailable' => false,
-            'mappings'         => []
+            'mappings'         => [],
+            'version'          => $this->config->getVersion()
         ];
 
         if ($isESAvailable) {

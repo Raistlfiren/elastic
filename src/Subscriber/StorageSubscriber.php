@@ -70,10 +70,18 @@ class StorageSubscriber implements EventSubscriberInterface
         if ($this->config->isSearchable($contentType)) {
             $response = $this->elasticService->deleteIndex($content);
 
-            if ($response !== null && $response['result'] === 'deleted') {
-                $this->log(Logger::INFO, 'Deleted ' . $contentType . ': ' . $id);
+            if ($this->config->getVersion() < 3) {
+                if (isset($response)) {
+                    $this->log(Logger::INFO, 'Deleted ' . $contentType . ': ' . $id);
+                } else {
+                    $this->log(Logger::CRITICAL, 'Failed to delete ' . $contentType . ' with ID: ' . $id);
+                }
             } else {
-                $this->log(Logger::CRITICAL, 'Failed to delete ' . $contentType . ' with ID: ' . $id);
+                if ($response !== null && $response['result'] === 'deleted') {
+                    $this->log(Logger::INFO, 'Deleted ' . $contentType . ': ' . $id);
+                } else {
+                    $this->log(Logger::CRITICAL, 'Failed to delete ' . $contentType . ' with ID: ' . $id);
+                }
             }
         }
     }
@@ -89,13 +97,24 @@ class StorageSubscriber implements EventSubscriberInterface
         if ($this->config->isSearchable($contentType)) {
             $response = $this->elasticService->saveIndex($event->getContent());
 
-            if ($response['result'] === 'updated') {
-                $this->log(Logger::INFO, 'Saved ' . $contentType . ': ' . $id);
-            } elseif ($response['result'] === 'created') {
-                $this->log(Logger::INFO, 'Created ' . $contentType . ': ' . $id);
+            if ($this->config->getVersion() < 3) {
+                if (isset($response['created'])) {
+                    $this->log(Logger::INFO, 'Created ' . $contentType . ': ' . $id);
+                } elseif ($response) {
+                    $this->log(Logger::INFO, 'Saved ' . $contentType . ': ' . $id);
+                } else {
+                    $this->log(Logger::CRITICAL, 'Failed to save ' . $contentType . ': ' . $id);
+                }
             } else {
-                $this->log(Logger::CRITICAL, 'Failed to save ' . $contentType . ': ' . $id);
+                if ($response['result'] === 'updated') {
+                    $this->log(Logger::INFO, 'Saved ' . $contentType . ': ' . $id);
+                } elseif ($response['result'] === 'created') {
+                    $this->log(Logger::INFO, 'Created ' . $contentType . ': ' . $id);
+                } else {
+                    $this->log(Logger::CRITICAL, 'Failed to save ' . $contentType . ': ' . $id);
+                }
             }
+
         }
     }
 

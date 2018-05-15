@@ -33,7 +33,11 @@
                                 {% for index in mappings %}
                                     {% for mapping in index %}
                                         {% for type, properties in mapping %}
-                                            <li class="list-group-item"><span class="badge">{{ properties.properties|length }} Properties</span>{{type}}</li>
+                                            {% if version > 3 %}
+                                                <li class="list-group-item"><span class="badge">{{ properties.properties|length }} Properties</span>{{type}}</li>
+                                            {% else %}
+                                                <li class="list-group-item"><span class="badge">{{ type|length }} Properties</span>{{type}}</li>
+                                            {% endif %}
                                         {% endfor %}
                                     {% endfor %}
                                 {% endfor %}
