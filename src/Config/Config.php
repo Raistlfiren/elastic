@@ -21,6 +21,8 @@ class Config
 
     protected $contentTypes;
 
+    protected $version;
+
     public function __construct(Application $app, array $config)
     {
         $this->setContentTypes($app['config']->get('contenttypes'));
@@ -28,6 +30,7 @@ class Config
         $this->setIndex($config['index']);
         $this->setIndexSettings($config['indexSettings']);
         $this->setMappings($config['mappings']);
+        $this->setVersion($config['version']);
     }
 
     /**
@@ -158,6 +161,26 @@ class Config
     public function setContentTypes($contentTypes)
     {
         $this->contentTypes = $contentTypes;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param mixed $version
+     *
+     * @return Config
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
 
         return $this;
     }

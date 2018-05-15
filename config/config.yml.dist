@@ -3,6 +3,8 @@ hosts:
 
 index: 'bolt'
 
+version: 2.4.6
+
 indexSettings:
     analysis:
         analyzer:

@@ -49,6 +49,9 @@ https://www.elastic.co/guide/en/elasticsearch/client/php-api/current/_configurat
 ### Index Name
 The index name is the name of the index, enough said.
 
+### Version
+Please specify the correct Elasticsearch version you are running for your cluster.
+
 ### Index Settings
 The index settings will include any settings that you might want to include for the index. You can find more information 
 on configuring this through the Elasticsearch documentation - https://www.elastic.co/guide/en/elasticsearch/guide/current/_index_settings.html
