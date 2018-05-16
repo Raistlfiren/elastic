@@ -162,16 +162,15 @@ class ElasticService
 
     protected function loadContent()
     {
-        $this->resetParams();
-
         foreach ($this->config->getContentTypes() as $contentType => $contentTypeMeta) {
+            $this->resetParams();
+
             $this->params['type'] = $contentType;
 
             $records = $this->query->getContent($contentType);
 
             foreach ($records as $record) {
                 $this->params['id'] = $record['id'];
-
                 foreach ($contentTypeMeta['fields'] as $field => $meta) {
                     if ($meta['type'] === 'datetime') {
                         if ($record[$field] instanceof Carbon) {
