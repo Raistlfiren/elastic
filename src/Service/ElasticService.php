@@ -137,7 +137,7 @@ class ElasticService
 
                 if ($meta['type'] === 'datetime') {
                     $defaultMapping['type']   = 'date';
-                    $defaultMapping['format'] = 'YYYY-MM-dd HH:mm:ss';
+                    $defaultMapping['format'] = 'YYYY-MM-DD\'T\'HH:mm:ssZ';
                 }
 
                 if (isset($userMappings[$field])) {
@@ -181,7 +181,7 @@ class ElasticService
                 foreach ($this->metadata->getClassMetadata($contentType)['fields'] as $field => $meta) {
                     if ($meta['type'] === 'datetime') {
                         if ($record[$field] instanceof Carbon) {
-                            $this->params['body'][$field] = $record[$field]->format('Y-m-d H:i:s');
+                            $this->params['body'][$field] = $record[$field]->toAtomString();
                         } else {
                             $this->params['body'][$field] = null;
                         }
@@ -238,7 +238,7 @@ class ElasticService
         foreach ($fields as $field => $meta) {
             if ($meta['type'] === 'datetime') {
                 if ($content[$field] instanceof Carbon) {
-                    $data[$field] = $content[$field]->format('Y-m-d H:i:s');
+                    $data[$field] = $content[$field]->toAtomString();
                 } else {
                     $data[$field] = null;
                 }
