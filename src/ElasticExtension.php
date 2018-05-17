@@ -41,7 +41,12 @@ class ElasticExtension extends SimpleExtension
 
         $app['elastic.service'] = $app->share(
             function ($app) {
-                return new ElasticService($app['elastic.client'], $app['elastic.config'], $app['query']);
+                return new ElasticService(
+                    $app['elastic.client'],
+                    $app['elastic.config'],
+                    $app['query'],
+                    $app['storage.metadata']
+                );
             }
         );
     }

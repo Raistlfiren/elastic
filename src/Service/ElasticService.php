@@ -3,7 +3,9 @@
 namespace Kemper\Elastic\Service;
 
 use Bolt\Storage\Entity\Content;
+use Bolt\Storage\Mapping\MetadataDriver;
 use Bolt\Storage\Query\Query;
+use Carbon\Carbon;
 use Elasticsearch\Client;
 use Kemper\Elastic\Config\Config;
 
@@ -26,6 +28,9 @@ class ElasticService
     /** @var Query $query */
     protected $query;
 
+    /** @var MetadataDriver $metadata */
+    protected $metadata;
+
     /** @var array $debugging */
     protected $debugging = [];
 
@@ -35,12 +40,14 @@ class ElasticService
      * @param Client $client
      * @param Config $config
      * @param Query $query
+     * @param MetadataDriver $metadata
      */
-    public function __construct(Client $client, Config $config, Query $query)
+    public function __construct(Client $client, Config $config, Query $query, MetadataDriver $metadata)
     {
         $this->client = $client;
         $this->config = $config;
         $this->query  = $query;
+        $this->metadata  = $metadata;
     }
 
     /**
@@ -123,7 +130,7 @@ class ElasticService
 
             $properties = [];
 
-            foreach ($contentTypeMeta['fields'] as $field => $meta) {
+            foreach ($this->metadata->getClassMetadata($contentType)['fields'] as $field => $meta) {
                 $userMappings = $this->config->getTypeMapping($contentType);
 
                 $defaultMapping = [];
@@ -171,7 +178,7 @@ class ElasticService
 
             foreach ($records as $record) {
                 $this->params['id'] = $record['id'];
-                foreach ($contentTypeMeta['fields'] as $field => $meta) {
+                foreach ($this->metadata->getClassMetadata($contentType)['fields'] as $field => $meta) {
                     if ($meta['type'] === 'datetime') {
                         if ($record[$field] instanceof Carbon) {
                             $this->params['body'][$field] = $record[$field]->format('Y-m-d H:i:s');
