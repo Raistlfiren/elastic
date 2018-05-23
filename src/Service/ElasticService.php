@@ -130,7 +130,9 @@ class ElasticService
 
             $properties = [];
 
-            foreach ($this->metadata->getClassMetadata($contentType)['fields'] as $field => $meta) {
+            $fields = $this->metadata->getClassMetadata($contentType)['fields'];
+
+            foreach ($fields as $field => $meta) {
                 $userMappings = $this->config->getTypeMapping($contentType);
 
                 $defaultMapping = [];
@@ -207,7 +209,7 @@ class ElasticService
      */
     public function saveIndex(Content $content)
     {
-        $this->compileRequest($content->getContenttype(), $content->getId());
+        $this->compileRequest((string)$content->getContenttype(), $content->getId());
 
         $data = $this->prepareData($content);
 
@@ -231,7 +233,7 @@ class ElasticService
     {
         $contentType = (string)$content->getContenttype();
 
-        $fields = $this->config->getContentTypes()[$contentType]['fields'];
+        $fields = $this->metadata->getClassMetadata($contentType)['fields'];
 
         $data = [];
 
