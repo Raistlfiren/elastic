@@ -187,6 +187,8 @@ class ElasticService
                         } else {
                             $this->params['body'][$field] = null;
                         }
+                    } elseif ($meta['type'] === 'json') {
+                        $this->params['body'][$field] = null;
                     } elseif ($meta['type'] === 'null') {
                         $this->params['body'][$field] = null;
                     } else {
