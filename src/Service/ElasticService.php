@@ -6,7 +6,7 @@ use Bolt\Storage\Entity\Content;
 use Bolt\Storage\Mapping\MetadataDriver;
 use Bolt\Storage\Query\Query;
 use Carbon\Carbon;
-use Elasticsearch\Client;
+use Elastic\Elasticsearch\Client;
 use Kemper\Elastic\Config\Config;
 
 /**
@@ -71,62 +71,70 @@ class ElasticService
     /**
      * @return bool
      */
-    public function doesIndexExist()
+    public function doesIndexExist($indexFullName)
     {
         $this->resetParams();
 
-        return $this->client->indices()->exists($this->params);
-    }
+        $response = $this->client->indices()->exists(['index' => $indexFullName]);
 
-    public function createIndex()
-    {
-        $this->resetParams();
-
-        $this->params['body'] = $this->config->getIndexSettings();
-        $response             = $this->client->indices()->create($this->params);
-
-        if ($response['acknowledged']) {
-            $this->debugging[] = '<p>Successfully created <code>' . $this->config->getIndex() . '</code> index.</p>';
-        } else {
-            $this->debugging[] = '<p>Error while creating <code>' . $this->config->getIndex() . '</code> index.</p>';
-        }
-    }
-
-    public function recreateIndex()
-    {
-        $this->resetParams();
-
-        if ($this->doesIndexExist()) {
-            $response = $this->client->indices()->delete($this->params);
-
-            if ($response['acknowledged']) {
-                $this->debugging[] =
-                    '<p>Successfully deleted <code>' . $this->config->getIndex() . '</code> index.</p>';
-            } else {
-                $this->debugging[] =
-                    '<p>Error while deleting <code>' . $this->config->getIndex() . '</code> index.</p>';
-            }
-        }
-
-        $this->createIndex();
+        return $response->getStatusCode() === 200;
     }
 
     public function importData()
     {
-        $this->recreateIndex();
+        $this->deleteMappings();
 
         $this->createMappings();
 
         $this->loadContent();
     }
 
+    public function doesIndecesExist()
+    {
+        $index = $this->config->getIndex();
+
+        foreach ($this->config->getContentTypes() as $contentType => $contentTypeMeta) {
+            $indexFullName = $index . '-' . $contentType;
+            if ($this->doesIndexExist($indexFullName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function deleteMappings()
+    {
+        $index = $this->config->getIndex();
+
+        foreach ($this->config->getContentTypes() as $contentType => $contentTypeMeta) {
+            $this->resetParams();
+
+            $indexFullName = $index . '-' . $contentType;
+
+            if ($this->doesIndexExist($indexFullName)) {
+                $response = $this->client->indices()->delete(['index' => $indexFullName]);
+
+                if ($response['acknowledged']) {
+                    $this->debugging[] =
+                        '<p>Successfully deleted <code>' . $this->config->getIndex() . '</code> index.</p>';
+                } else {
+                    $this->debugging[] =
+                        '<p>Error while deleting <code>' . $this->config->getIndex() . '</code> index.</p>';
+                }
+            }
+        }
+    }
+
     protected function createMappings()
     {
+        $index = $this->config->getIndex();
+
         foreach ($this->config->getContentTypes() as $contentType => $contentTypeMeta) {
             $this->resetParams();
             $this->params['body'] = [];
 
-            $this->params['type']             = $contentType;
+            $this->params['index']             = $index . '-' . $contentType;
 
             $properties = [];
 
@@ -139,7 +147,7 @@ class ElasticService
 
                 if ($meta['type'] === 'datetime') {
                     $defaultMapping['type']   = 'date';
-                    $defaultMapping['format'] = 'YYYY-MM-DD\'T\'HH:mm:ssZ';
+                    $defaultMapping['format'] = "yyyy-MM-dd'T'HH:mm:ssZZZZZ";
                 }
 
                 if (isset($userMappings[$field])) {
@@ -151,13 +159,13 @@ class ElasticService
 
             $mapping = [
                 '_source'    => [
-                    'enabled' => true
+                    'enabled' => true,
                 ],
-                'properties' => $properties
+                'properties' => $properties,
             ];
 
-            $this->params['body'][$contentType] = $mapping;
-            $response                           = $this->client->indices()->putMapping($this->params);
+            $this->params['body']['mappings'] = $mapping;
+            $response                           = $this->client->indices()->create($this->params);
 
             if ($response['acknowledged']) {
                 $this->debugging[] =
@@ -171,8 +179,11 @@ class ElasticService
 
     protected function loadContent()
     {
+        $index = $this->config->getIndex();
+
         foreach ($this->config->getContentTypes() as $contentType => $contentTypeMeta) {
             $this->resetParams();
+            $this->params['index']             = $index . '-' . $contentType;
 
             $this->params['type'] = $contentType;
 
@@ -287,7 +298,7 @@ class ElasticService
     private function resetParams()
     {
         $this->params          = [];
-        $this->params['index'] = $this->config->getIndex();
+//        $this->params['index'] = $this->config->getIndex();
     }
 
     /**

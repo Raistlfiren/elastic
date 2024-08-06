@@ -30,7 +30,10 @@ class Config
         $this->setIndex($config['index']);
         $this->setIndexSettings($config['indexSettings']);
         $this->setMappings($config['mappings']);
-        $this->setVersion($config['version']);
+
+        if (isset($config['version'])) {
+            $this->setVersion($config['version']);
+        }
     }
 
     /**

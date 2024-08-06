@@ -41,7 +41,7 @@ class ElasticController extends Base
     public function addRoutes(ControllerCollection $controller)
     {
         $controller->match('/manage', [$this, 'manage'])
-                   ->bind('elastic.manage');
+            ->bind('elastic.manage');
 
         return $controller;
     }
@@ -63,11 +63,11 @@ class ElasticController extends Base
         ];
 
         if ($isESAvailable) {
-            $data['isIndexAvailable'] = $this->elasticService->doesIndexExist();
+            $data['isIndexAvailable'] = $this->elasticService->doesIndecesExist();
 
-            if ($data['isIndexAvailable']) {
-                $data['mappings'] = $this->elasticService->getMappings();
-            }
+//            if ($data['isIndexAvailable']) {
+//                $data['mappings'] = $this->elasticService->getMappings();
+//            }
         }
 
         if ($request->isMethod('POST')) {

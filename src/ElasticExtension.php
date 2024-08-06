@@ -4,7 +4,7 @@ namespace Kemper\Elastic;
 
 use Bolt\Extension\SimpleExtension;
 use Bolt\Menu\MenuEntry;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 use Kemper\Elastic\Service\ElasticService;
 use Kemper\Elastic\Subscriber\StorageSubscriber;
 use Silex\Application;
@@ -34,8 +34,8 @@ class ElasticExtension extends SimpleExtension
         $app['elastic.client'] = $app->share(
             function ($app) {
                 return ClientBuilder::create()
-                                    ->setHosts($app['elastic.config']->getHosts())
-                                    ->build();
+                    ->setHosts($app['elastic.config']->getHosts())
+                    ->build();
             }
         );
 
@@ -83,10 +83,10 @@ class ElasticExtension extends SimpleExtension
     protected function registerMenuEntries()
     {
         $menu = MenuEntry::create('elastic-manage', 'elastic')
-                         ->setLabel('ES Status')
-                         ->setIcon('fa:search')
-                         ->setPermission('admin')
-                         ->setRoute('elastic.manage');
+            ->setLabel('ES Status')
+            ->setIcon('fa:search')
+            ->setPermission('admin')
+            ->setRoute('elastic.manage');
 
         return [
             $menu,
