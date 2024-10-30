@@ -222,9 +222,14 @@ class ElasticService
      */
     public function saveIndex(Content $content)
     {
-        $this->compileRequest((string)$content->getContenttype(), $content->getId());
+        $contentType = (string)$content->getContenttype();
+
+        $this->compileRequest($contentType, $content->getId());
 
         $data = $this->prepareData($content);
+
+        $index = $this->config->getIndex();
+        $this->params['index']             = $index . '-' . $contentType;
 
         if ($this->client->exists($this->params)) {
             $this->params['body']['doc'] = $data;
@@ -274,7 +279,11 @@ class ElasticService
      */
     public function deleteIndex(Content $content)
     {
+        $contentType = (string)$content->getContenttype();
         $this->compileRequest($content->getContenttype(), $content->getId());
+
+        $index = $this->config->getIndex();
+        $this->params['index']             = $index . '-' . $contentType;
 
         if ($this->client->exists($this->params)) {
             return $this->client->delete($this->params);
