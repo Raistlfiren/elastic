@@ -231,10 +231,16 @@ class ElasticService
         $index = $this->config->getIndex();
         $this->params['index']             = $index . '-' . $contentType;
 
-        if ($this->client->exists($this->params)) {
-            $this->params['body']['doc'] = $data;
+        try {
+            $searchResponse = $this->client->get($this->params);
 
-            return $this->client->update($this->params);
+            if ($searchResponse) {
+                $this->params['body']['doc'] = $data;
+
+                return $this->client->update($this->params);
+            }
+        } catch (\Exception $e) {
+            // Couldn't find the index
         }
 
         $this->params['body'] = $data;
@@ -285,11 +291,16 @@ class ElasticService
         $index = $this->config->getIndex();
         $this->params['index']             = $index . '-' . $contentType;
 
-        if ($this->client->exists($this->params)) {
-            return $this->client->delete($this->params);
-        }
+        try {
+            $searchResponse = $this->client->get($this->params);
 
-        return null;
+            if ($searchResponse) {
+                return $this->client->delete($this->params);
+            }
+        } catch (\Exception $e) {
+            // Couldn't find the index
+            return null;
+        }
     }
 
     /**
