@@ -225,7 +225,6 @@ class ElasticService
         $contentType = (string)$content->getContenttype();
 
         $this->compileRequest($contentType, $content->getId());
-
         $data = $this->prepareData($content);
 
         $index = $this->config->getIndex();
@@ -270,6 +269,8 @@ class ElasticService
                 }
             } elseif ($meta['type'] === 'null') {
                 $data[$field] = null;
+            }  elseif ($meta['type'] === 'boolean') {
+                $data[$field] = (bool) $content[$field];
             } else {
                 $data[$field] = $content[$field];
             }
