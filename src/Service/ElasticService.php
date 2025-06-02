@@ -187,7 +187,7 @@ class ElasticService
 
             $this->params['type'] = $contentType;
 
-            $records = $this->query->getContent($contentType);
+            $records = $this->query->getContent($contentType, ['status' => 'published']);
 
             foreach ($records as $record) {
                 $this->params['id'] = $record['id'];
