@@ -93,6 +93,15 @@ class StorageSubscriber implements EventSubscriberInterface
     {
         $contentType = $event->getContentType();
         $id          = $event->getContent()->getId();
+        $status      = $event->getContent()->getStatus();
+
+        if ($status !== 'published') {
+            $this->log(Logger::INFO, 'Saved ' . $contentType . ': ' . $id . ' - status: ' . $status);
+
+            $this->postDelete($event);
+
+            return;
+        }
 
         if ($this->config->isSearchable($contentType)) {
             $response = $this->elasticService->saveIndex($event->getContent());
